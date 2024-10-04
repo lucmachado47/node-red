@@ -1,0 +1,626 @@
+[
+    {
+        "id": "d325fab57a274f26",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1e033f8b7099f2e7",
+        "type": "ui_group",
+        "name": "ZIP Code",
+        "tab": "92a0cf6f97ad6eb2",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": "input"
+    },
+    {
+        "id": "92a0cf6f97ad6eb2",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "b20c8c54ad154317",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#54797d",
+                "baseFont": "Times New Roman,Times,serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#54797d",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#54797d",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#333333",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#79a0a5",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#54797d",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "Times New Roman,Times,serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "ZIP Code Details",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "false",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "6d177f09f13df9df",
+        "type": "MySQLdatabase",
+        "name": "dbnode_red",
+        "host": "localhost",
+        "port": "3306",
+        "db": "dbnode_red",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "a58af075c1a20d07",
+        "type": "http request",
+        "z": "d325fab57a274f26",
+        "name": "request",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://brasilapi.com.br/api/cvm/corretoras/v1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 300,
+        "y": 80,
+        "wires": [
+            [
+                "3242bcb6d9109067"
+            ]
+        ]
+    },
+    {
+        "id": "3242bcb6d9109067",
+        "type": "function",
+        "z": "d325fab57a274f26",
+        "name": "function 1",
+        "func": "let brokers = msg.payload;  \n\nlet isValidName = (name) => {\n    return name && ![\"\", \"-----\", \"--\" ].includes(name);\n};\n\nlet fBrokers = brokers.map(broker => {\n    let name = isValidName(broker.nome_comercial) ? broker.nome_comercial : broker.nome_social;\n    return `<tr>\n                <td>${name}</td>  \n                <td>${broker.municipio}</td>  \n                <td>${broker.cnpj}</td> \n            </tr>`;\n});\n\nmsg.payload = fBrokers.join(\"\");  \n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 80,
+        "wires": [
+            [
+                "ef36bc3bd9d982af"
+            ]
+        ]
+    },
+    {
+        "id": "ef36bc3bd9d982af",
+        "type": "template",
+        "z": "d325fab57a274f26",
+        "name": "html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <head>\n        <title>Brokers List</title>\n        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n    </head>\n    <body>\n        <hr>\n        <div class=\"container\">\n            <h1 class=\"text-center my-4\">Brokers List</h1>\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th>Name</th>\n                        <th>City</th>\n                        <th>CNPJ</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    {{{payload}}}\n                </tbody>\n            </table>  \n        </div>\n    </body>\n</html>\n\n",
+        "output": "str",
+        "x": 630,
+        "y": 80,
+        "wires": [
+            [
+                "07f4405440c76d0a"
+            ]
+        ]
+    },
+    {
+        "id": "6044a49d91309928",
+        "type": "http in",
+        "z": "d325fab57a274f26",
+        "name": "",
+        "url": "/brokers",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "a58af075c1a20d07"
+            ]
+        ]
+    },
+    {
+        "id": "07f4405440c76d0a",
+        "type": "http response",
+        "z": "d325fab57a274f26",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 780,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "84f0ab08603fd5fb",
+        "type": "http in",
+        "z": "d325fab57a274f26",
+        "name": "",
+        "url": "/zipcode/:zipcode",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "ade4bab73d088974"
+            ]
+        ]
+    },
+    {
+        "id": "beb52b34634f2ae2",
+        "type": "http request",
+        "z": "d325fab57a274f26",
+        "name": "request",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://brasilapi.com.br/api/cep/v2/{{{payload}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "d4554162ef39799b"
+            ]
+        ]
+    },
+    {
+        "id": "d4554162ef39799b",
+        "type": "template",
+        "z": "d325fab57a274f26",
+        "name": "html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <head>\n        <title>ZIP Code Details</title>\n        <style>\n            body {\n                font-family: Arial, sans-serif;\n                background-color: #F0F8FF;\n                color: #333;\n                margin: 0;\n                padding: 10px;\n            }\n\n            h2 {\n                text-align: center;\n                color: #483D8B;\n                margin-bottom: 15px;\n            }\n\n            table {\n                width: 100%;\n                border-collapse: collapse;\n                border-radius: 10px;\n                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);\n            }\n            th {\n                background-color: #F8F8FF;\n            }\n\n            th, td {\n                padding: 6px;\n                text-align: left;\n                border-bottom: 1px;\n            }\n            tr:hover {\n                background-color: #E6E6FA;\n            }\n        </style>\n    </head>\n    <body>\n        <h2>ZIP Code Details</h2>\n        <div>\n            <table>\n                <thead>\n                    <tr>\n                        <th>CEP</th>\n                        <th>Street</th>\n                        <th>Neighborhood</th>\n                        <th>City</th>\n                        <th>State</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr>\n                        <td>{{payload.cep}}</td>\n                        <td>{{payload.street}}</td>\n                        <td>{{payload.neighborhood}}</td>\n                        <td>{{payload.city}}</td>\n                        <td>{{payload.state}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </body>\n</html>\n\n\n \n\n",
+        "output": "str",
+        "x": 630,
+        "y": 140,
+        "wires": [
+            [
+                "bf41a9ad6639d959"
+            ]
+        ]
+    },
+    {
+        "id": "bf41a9ad6639d959",
+        "type": "http response",
+        "z": "d325fab57a274f26",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 800,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "ade4bab73d088974",
+        "type": "function",
+        "z": "d325fab57a274f26",
+        "name": "function 1",
+        "func": "let fZipcode = msg.req.params.zipcode.trim();\n\nif (fZipcode.length === 8 && /^\\d{8}$/.test(fZipcode)) {\n    msg.payload = fZipcode;\n    return msg;  \n} else {\n    msg.payload = { error: \"Invalid zip code. Must contain 8 numeric digits.\"};\n    return [null, msg];\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 140,
+        "wires": [
+            [
+                "beb52b34634f2ae2"
+            ]
+        ]
+    },
+    {
+        "id": "a0f6e9ad41a3a323",
+        "type": "http request",
+        "z": "d325fab57a274f26",
+        "name": "request",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://brasilapi.com.br/api/cep/v2/{{{payload}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 320,
+        "y": 200,
+        "wires": [
+            [
+                "cf54f0a23ff4df7b"
+            ]
+        ]
+    },
+    {
+        "id": "cf54f0a23ff4df7b",
+        "type": "template",
+        "z": "d325fab57a274f26",
+        "name": "html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <body>\n        <h2>ZIP Code Details</h2>\n        <div>\n            <p>CEP: {{payload.cep}}</p>\n            <p>Street: {{payload.street}}</p>\n            <p>Neighborhood: {{payload.neighborhood}}</p>\n            <p>City: {{payload.city}}</p>\n            <p>State: {{payload.state}}</p>\n        </div>\n    </body>\n</html>\n\n\n \n\n",
+        "output": "str",
+        "x": 470,
+        "y": 200,
+        "wires": [
+            [
+                "e4fb76f352e3ae6c"
+            ]
+        ]
+    },
+    {
+        "id": "e4fb76f352e3ae6c",
+        "type": "ui_template",
+        "z": "d325fab57a274f26",
+        "group": "1e033f8b7099f2e7",
+        "name": "ui template",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div ng-bind-html=\"msg.payload\"></div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "result",
+        "x": 650,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5910f1daac69c1e0",
+        "type": "ui_text_input",
+        "z": "d325fab57a274f26",
+        "name": "zip code input",
+        "label": "ZIP Code",
+        "tooltip": "Must contain 8 numeric digits. Press enter to send.",
+        "group": "1e033f8b7099f2e7",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": "0",
+        "topic": "topic",
+        "sendOnBlur": false,
+        "className": "input",
+        "topicType": "msg",
+        "x": 120,
+        "y": 200,
+        "wires": [
+            [
+                "a0f6e9ad41a3a323"
+            ]
+        ]
+    },
+    {
+        "id": "7d9f1856d3b92de3",
+        "type": "http request",
+        "z": "d325fab57a274f26",
+        "name": "request",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://brasilapi.com.br/api/cvm/corretoras/v1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 280,
+        "y": 260,
+        "wires": [
+            [
+                "2669862c929bf889"
+            ]
+        ]
+    },
+    {
+        "id": "2669862c929bf889",
+        "type": "function",
+        "z": "d325fab57a274f26",
+        "name": "function 1",
+        "func": "let brokers = msg.payload;  \n\nlet isValidName = (name) => {\n    return name && ![\"\", \"-----\", \"--\" ].includes(name);\n};\n\nlet queries = brokers.map(broker => {\n    let name = isValidName(broker.nome_comercial) ? broker.nome_comercial : broker.nome_social;\n    return `INSERT INTO brokers (name, city, cnpj, status) \n    VALUES ('${name}', '${broker.municipio}', '${broker.cnpj}', '${broker.status}');`;\n});\n\nmsg.topic = queries.join(\" \");\n\nmsg.payload = null;  \n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 260,
+        "wires": [
+            [
+                "d258b5a69e590923"
+            ]
+        ]
+    },
+    {
+        "id": "d258b5a69e590923",
+        "type": "mysql",
+        "z": "d325fab57a274f26",
+        "mydb": "6d177f09f13df9df",
+        "name": "mysql",
+        "x": 610,
+        "y": 260,
+        "wires": [
+            [
+                "0ad2469a9fd3b5a4",
+                "0a0b22466596df7e"
+            ]
+        ]
+    },
+    {
+        "id": "0ad2469a9fd3b5a4",
+        "type": "debug",
+        "z": "d325fab57a274f26",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "73098252b92f2a25",
+        "type": "inject",
+        "z": "d325fab57a274f26",
+        "name": "inject",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 110,
+        "y": 260,
+        "wires": [
+            [
+                "7d9f1856d3b92de3"
+            ]
+        ]
+    },
+    {
+        "id": "afd84b95a9a768e1",
+        "type": "template",
+        "z": "d325fab57a274f26",
+        "name": "html_form",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <head>\n        <title>SQL Query Form</title>\n    </head>\n    <style>\n        h2 {\n            text-align: center;\n            color: #333;\n            margin-bottom: 15px;\n        }\n        \n        body {\n            font-family: Arial, sans-serif;\n            background-color: #898d96;\n            maring: 0;\n            padding: 15px;      \n        }\n\n        form {\n            align-items: center;\n            display: flex;\n            flex-direction: column;\n        }\n\n        textarea {\n            border-radius: 8px;\n            padding: 8px;\n            width: 400px;\n            \n        }\n\n        input {\n            padding: 8px;\n            border-radius: 8px;\n            cursor: pointer\n        }\n\n        input:hover {\n            background-color: #dadde3; \n        }\n\n        @media (max-width: 600px) {\n            input, textarea {\n                width: 100%;\n            }\n        }\n        \n    </style>\n    <body>\n        <h2>SQL Query Form</h2>\n        <hr>\n        <form action=\"/run_sql\" method=\"POST\">\n            <label for =\"sql\">Type your SQL query:</label><br><br>\n            <textarea id=\"sql\" name=\"sql\" rows=\"4\" cols=\"50\" placeholder=\"SELECT * FROM brokers\"></textarea><br><br>\n            <input type=\"submit\" value=\"Run Query\">\n        </form>\n    </body>\n</html>\n",
+        "output": "str",
+        "x": 320,
+        "y": 380,
+        "wires": [
+            [
+                "a2d30975dd96bf94"
+            ]
+        ]
+    },
+    {
+        "id": "00a251635d5853cf",
+        "type": "http in",
+        "z": "d325fab57a274f26",
+        "name": "",
+        "url": "/sql_form",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 380,
+        "wires": [
+            [
+                "afd84b95a9a768e1"
+            ]
+        ]
+    },
+    {
+        "id": "6bae51bae843b54a",
+        "type": "http in",
+        "z": "d325fab57a274f26",
+        "name": "",
+        "url": "/run_sql",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 320,
+        "wires": [
+            [
+                "2db39fae048024ca"
+            ]
+        ]
+    },
+    {
+        "id": "2db39fae048024ca",
+        "type": "function",
+        "z": "d325fab57a274f26",
+        "name": "function 1",
+        "func": "msg.topic = msg.req.body.sql;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "d258b5a69e590923"
+            ]
+        ]
+    },
+    {
+        "id": "0a0b22466596df7e",
+        "type": "template",
+        "z": "d325fab57a274f26",
+        "name": "html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <head>\n        <title>Query Result</title>\n        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n    </head>\n    <body>\n        <div class=\"container\">\n            <h2 class=\"text-center my-4\">Query Result</h2>\n            <table class=\"table table-striped table-hover\">\n                <tr>\n                    <th>Name</th>\n                    <th>City</th>\n                    <th>CNPJ</th>\n                    <th>Status</th>\n                </tr>\n                {{#payload}}\n                <tr>\n                    <td>{{name}}</td>\n                    <td>{{city}}</td>\n                    <td>{{cnpj}}</td>\n                    <td>{{status}}</td>\n                </tr>\n                {{/payload}}\n            </table>\n        </div>\n    </body>\n</html>\n",
+        "output": "str",
+        "x": 630,
+        "y": 320,
+        "wires": [
+            [
+                "97a89fc05c8e9d36"
+            ]
+        ]
+    },
+    {
+        "id": "97a89fc05c8e9d36",
+        "type": "http response",
+        "z": "d325fab57a274f26",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 780,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a2d30975dd96bf94",
+        "type": "http response",
+        "z": "d325fab57a274f26",
+        "name": "response",
+        "statusCode": "",
+        "headers": {},
+        "x": 500,
+        "y": 380,
+        "wires": []
+    }
+]
