@@ -72,6 +72,7 @@ Provides a web form that receives an SQL command as input and return the results
 3. Install dependencies by running the command `npm install` in your terminal.
 4. Import the flows.json file into your Node-RED instance.
 5. Set up the MySQL database using the provided `setup.sql` script. You can run the SQL commands in your MySQL client:
+   ```
    -- Create the schema (database)
    CREATE SCHEMA IF NOT EXISTS dbnode_red;
 
